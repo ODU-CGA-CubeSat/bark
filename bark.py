@@ -131,8 +131,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--get-api-key", action="store_true", help="Get NearSpace Launch API key"
     )
-    parser.add_argument("-l", "--list", action="store_true", help="List all missions")
-    parser.add_argument("--info", action="store_true", help="Display info on first mission")
+    parser.add_argument(
+        "--info", action="store_true", help="Display info on first mission"
+    )
+    parser.add_argument(
+        "-l", "--list", action="store_true", help="List all packets on first mission"
+    )
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
@@ -157,11 +161,28 @@ if __name__ == "__main__":
 
     # Handle consoleAPI commands
     missions = bark.console_api("getMissions")
-    if args.list:
-        result_as_formatted_string = json.dumps(missions, indent=2)
-        print(result_as_formatted_string)
+    missionIDToFetch = missions[0]["missionID"]
+    missionDetails = bark.console_api(
+        "getMissionDetails", {"missionID": missionIDToFetch}
+    )
     if args.info:
-        missionIDToFetch = missions[0]["missionID"]
-        missionDetails = bark.console_api("getMissionDetails", {"missionID": missionIDToFetch})
         result_as_formatted_string = json.dumps(missionDetails, indent=2)
         print(result_as_formatted_string)
+    if args.list:
+        recentPackets = bark.console_api(
+            "getConsoleMissionPackets", {"missionID": missionIDToFetch}
+        )
+        print("Most Recent Packets, Any Radio/Format")
+        numPackets = len(recentPackets["lastAnyRadioOrFormat"])
+        for i in range(numPackets):
+            packet = recentPackets["lastAnyRadioOrFormat"][-numPackets]
+            radioViewID = packet["radioViewID"]
+            radioViewName = missionDetails["radioViews"][str(radioViewID)][
+                "radioViewName"
+            ]
+            formatID = packet["formatID"]
+            formatName = missionDetails["downlinkFormats"][str(formatID)]["formatName"]
+            print("  ", radioViewName, formatName)
+            print("     ", packet["gatewayTS"], "UTC")
+            print("     ", packet["numBytes"], "bytes")
+            print("     ", packet["packetFields"])
