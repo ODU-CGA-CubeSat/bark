@@ -78,6 +78,42 @@ class Bark:
         with open("barkconfig.toml", "w") as file:
             file.write(toml.dumps(self.config))
 
+    def _get_request_url(self, method, params={}):
+        return "".join(
+            [
+                self.base_url,
+                "?email=",
+                self.email,
+                "&apiKey=",
+                self.api_key,
+                "&method=",
+                method,
+                "&params=",
+                json.dumps(params),
+            ]
+        )
+
+    def _load_url_and_parse_json(self, url):
+        r = requests.get(url)
+        try:
+            return r.json()
+        except Exception as e:
+            print("Error parsing returned JSON:", e)
+            exit(0)
+
+    def console_api(self, method, params={}):
+        url = self._get_request_url(method, params)
+        result = self._load_url_and_parse_json(url)
+        if not result["success"]:
+            print("Error from api call", method)
+            print("  result.errorCode:", result["errorCode"])
+            print("  result.description:", result["description"])
+            print("  result.return:", result["return"])
+            exit(0)
+        else:
+            result_as_formatted_string = json.dumps(result["return"], indent=2)
+            return result_as_formatted_string
+
 
 if __name__ == "__main__":
     # Setup parser
@@ -96,6 +132,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--get-api-key", action="store_true", help="Get NearSpace Launch API key"
     )
+    parser.add_argument("-l", "--list", action="store_true", help="List all missions")
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
@@ -117,3 +154,7 @@ if __name__ == "__main__":
         print(bark.email)
     if args.get_api_key:
         print(bark.api_key)
+
+    # Handle consoleAPI commands
+    if args.list:
+        print(bark.console_api("getMissions"))
