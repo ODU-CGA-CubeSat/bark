@@ -111,8 +111,7 @@ class Bark:
             print("  result.return:", result["return"])
             exit(0)
         else:
-            result_as_formatted_string = json.dumps(result["return"], indent=2)
-            return result_as_formatted_string
+            return result["return"]
 
 
 if __name__ == "__main__":
@@ -133,6 +132,7 @@ if __name__ == "__main__":
         "--get-api-key", action="store_true", help="Get NearSpace Launch API key"
     )
     parser.add_argument("-l", "--list", action="store_true", help="List all missions")
+    parser.add_argument("--info", action="store_true", help="Display info on first mission")
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
@@ -156,5 +156,12 @@ if __name__ == "__main__":
         print(bark.api_key)
 
     # Handle consoleAPI commands
+    missions = bark.console_api("getMissions")
     if args.list:
-        print(bark.console_api("getMissions"))
+        result_as_formatted_string = json.dumps(missions, indent=2)
+        print(result_as_formatted_string)
+    if args.info:
+        missionIDToFetch = missions[0]["missionID"]
+        missionDetails = bark.console_api("getMissionDetails", {"missionID": missionIDToFetch})
+        result_as_formatted_string = json.dumps(missionDetails, indent=2)
+        print(result_as_formatted_string)
