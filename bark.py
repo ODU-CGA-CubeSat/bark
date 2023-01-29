@@ -22,12 +22,12 @@ class Bark:
         )
 
     def _load_config(self):
-        "Load barkconfig.toml, if one exists. Otherwise, create one"
+        "Load config.toml, if one exists. Otherwise, create one"
         try:
-            with open("barkconfig.toml", "r") as file:
+            with open("config.toml", "r") as file:
                 self.config = toml.loads(file.read())
         except FileNotFoundError:
-            with open("barkconfig.toml", "w") as file:
+            with open("config.toml", "w") as file:
                 file.write(toml.dumps(self.config))
         except Exception:
             traceback.print_exc()
@@ -52,7 +52,7 @@ class Bark:
         self.config["email"] = email
 
         # Overwrite existing config file
-        with open("barkconfig.toml", "w") as file:
+        with open("config.toml", "w") as file:
             file.write(toml.dumps(self.config))
 
     @property
@@ -75,7 +75,7 @@ class Bark:
         self.config["api-key"] = api_key
 
         # Overwrite existing config file
-        with open("barkconfig.toml", "w") as file:
+        with open("config.toml", "w") as file:
             file.write(toml.dumps(self.config))
 
     def _get_request_url(self, method, params={}):
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     # Setup bark instance
     bark = Bark()
 
-    # Get/set barkconfig.toml, if passed as argument
+    # Get/set config.toml, if passed as argument
     if args.set_email:
         bark.email = args.set_email[0]
     if args.set_api_key:
