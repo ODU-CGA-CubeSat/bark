@@ -14,12 +14,18 @@ class Bark:
     def __init__(self):
         self.config = {}
         self.config["user"] = {}
+        self.config["mission"] = {}
 
         self.base_url = "https://data.nsldata.com/webAPI.php"
 
     def _prompt_set_email_and_api_key(self):
         sys.exit(
             "\nPlease configure your email and API key using the following commands:\n\n\t./bark.py --set-email <your_email@example.com>\n\t./bark.py --set-api-key <your_api_key>\n"
+        )
+
+    def _prompt_set_mission_id(self):
+        sys.exit(
+            "\nPlease configure your mission ID using the following commands:\n\n\t./bark.py --set-mission-id <your_mission_id>\n"
         )
 
     def _load_config(self):
@@ -79,6 +85,29 @@ class Bark:
         with open("config.toml", "w") as file:
             file.write(toml.dumps(self.config))
 
+    @property
+    def mission_id(self):
+        # Load config
+        self._load_config()
+
+        # Attempt to return mission id. Otherwise, prompt user to configure key
+        try:
+            return self.config["mission"]["id"]
+        except KeyError:
+            self._prompt_set_mission_id()
+
+    @mission_id.setter
+    def mission_id(self, mission_id):
+        # Load config, as to ensure other configurations persist after overwriting config file
+        self._load_config()
+
+        # Set mission id
+        self.config["mission"]["id"] = mission_id
+
+        # Overwrite existing config file
+        with open("config.toml", "w") as file:
+            file.write(toml.dumps(self.config))
+
     def _get_request_url(self, method, params={}):
         return "".join(
             [
@@ -124,13 +153,19 @@ if __name__ == "__main__":
         "--set-email", type=str, nargs=1, help="Set NearSpace Launch user email"
     )
     parser.add_argument(
-        "--set-api-key", type=str, nargs=1, help="Set NearSpace Launch API key"
-    )
-    parser.add_argument(
         "--get-email", action="store_true", help="Get NearSpace Launch user email"
     )
     parser.add_argument(
+        "--set-api-key", type=str, nargs=1, help="Set NearSpace Launch API key"
+    )
+    parser.add_argument(
         "--get-api-key", action="store_true", help="Get NearSpace Launch API key"
+    )
+    parser.add_argument(
+        "--set-mission-id", type=str, nargs=1, help="Set NearSpace Launch Mission ID"
+    )
+    parser.add_argument(
+        "--get-mission-id", action="store_true", help="Get NearSpace Launch Mission ID"
     )
     parser.add_argument(
         "--info", action="store_true", help="Display info on first mission"
@@ -153,12 +188,16 @@ if __name__ == "__main__":
     # Get/set config.toml, if passed as argument
     if args.set_email:
         bark.email = args.set_email[0]
-    if args.set_api_key:
-        bark.api_key = args.set_api_key[0]
     if args.get_email:
         print(bark.email)
+    if args.set_api_key:
+        bark.api_key = args.set_api_key[0]
     if args.get_api_key:
         print(bark.api_key)
+    if args.set_mission_id:
+        bark.mission_id = args.set_mission_id[0]
+    if args.get_mission_id:
+        print(bark.mission_id)
 
     # Handle consoleAPI commands
     missions = bark.console_api("getMissions")
