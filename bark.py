@@ -201,7 +201,7 @@ if __name__ == "__main__":
 
     # Handle consoleAPI commands
     missions = bark.console_api("getMissions")
-    missionIDToFetch = missions[0]["missionID"]
+    missionIDToFetch = bark.mission_id
     missionDetails = bark.console_api(
         "getMissionDetails", {"missionID": missionIDToFetch}
     )
