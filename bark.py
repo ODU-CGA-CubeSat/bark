@@ -13,6 +13,7 @@ class Bark:
 
     def __init__(self):
         self.config = {}
+        self.config["user"] = {}
 
         self.base_url = "https://data.nsldata.com/webAPI.php"
 
@@ -39,7 +40,7 @@ class Bark:
 
         # Attempt to return email. Otherwise, prompt user to configure email
         try:
-            return self.config["email"]
+            return self.config["user"]["email"]
         except KeyError:
             self._prompt_set_email_and_api_key()
 
@@ -49,7 +50,7 @@ class Bark:
         self._load_config()
 
         # Set email
-        self.config["email"] = email
+        self.config["user"]["email"] = email
 
         # Overwrite existing config file
         with open("config.toml", "w") as file:
@@ -62,7 +63,7 @@ class Bark:
 
         # Attempt to return API key. Otherwise, prompt user to configure key
         try:
-            return self.config["api-key"]
+            return self.config["user"]["api-key"]
         except KeyError:
             self._prompt_set_email_and_api_key()
 
@@ -72,7 +73,7 @@ class Bark:
         self._load_config()
 
         # Set API key
-        self.config["api-key"] = api_key
+        self.config["user"]["api-key"] = api_key
 
         # Overwrite existing config file
         with open("config.toml", "w") as file:
