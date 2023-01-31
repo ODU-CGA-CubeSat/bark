@@ -201,7 +201,6 @@ if __name__ == "__main__":
 
     # Handle console_api commands
     if args.info:
-        missions = bark.console_api("getMissions")
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
@@ -215,7 +214,6 @@ if __name__ == "__main__":
         print(result_as_formatted_string)
 
     if args.list:
-        missions = bark.console_api("getMissions")
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
