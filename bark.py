@@ -229,9 +229,8 @@ if __name__ == "__main__":
             print(bark.url)
 
         print("Most Recent Packets, Any Radio/Format")
-        number_of_packets = len(recent_packets["lastAnyRadioOrFormat"])
-        for i in range(number_of_packets):
-            packet = recent_packets["lastAnyRadioOrFormat"][-number_of_packets]
+        most_recent_packets_any_radio_or_format = recent_packets["lastAnyRadioOrFormat"]
+        for packet in most_recent_packets_any_radio_or_format:
             radio_view_id = packet["radioViewID"]
             radio_view_name = mission_details["radioViews"][str(radio_view_id)][
                 "radioViewName"
