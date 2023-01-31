@@ -126,11 +126,7 @@ class Bark:
 
     def _load_url_and_parse_json(self, url):
         r = requests.get(url)
-        try:
-            return r.json()
-        except Exception as e:
-            print("Error parsing returned JSON:", e)
-            exit(0)
+        return r.json()
 
     def console_api(self, method, params={}):
         self.url = self._get_request_url(method, params)
