@@ -200,15 +200,20 @@ if __name__ == "__main__":
         print(bark.mission_id)
 
     # Handle consoleAPI commands
-    missions = bark.console_api("getMissions")
-    missionIDToFetch = bark.mission_id
-    missionDetails = bark.console_api(
-        "getMissionDetails", {"missionID": missionIDToFetch}
-    )
     if args.info:
+        missions = bark.console_api("getMissions")
+        missionIDToFetch = bark.mission_id
+        missionDetails = bark.console_api(
+            "getMissionDetails", {"missionID": missionIDToFetch}
+        )
         result_as_formatted_string = json.dumps(missionDetails, indent=2)
         print(result_as_formatted_string)
     if args.list:
+        missions = bark.console_api("getMissions")
+        missionIDToFetch = bark.mission_id
+        missionDetails = bark.console_api(
+            "getMissionDetails", {"missionID": missionIDToFetch}
+        )
         recentPackets = bark.console_api(
             "getConsoleMissionPackets", {"missionID": missionIDToFetch}
         )
