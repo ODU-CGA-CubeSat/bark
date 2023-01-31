@@ -17,6 +17,7 @@ class Bark:
         self.config["mission"] = {}
 
         self.base_url = "https://data.nsldata.com/webAPI.php"
+        self.url = ""
 
     def _prompt_set_email_and_api_key(self):
         sys.exit(
@@ -132,8 +133,8 @@ class Bark:
             exit(0)
 
     def console_api(self, method, params={}):
-        url = self._get_request_url(method, params)
-        result = self._load_url_and_parse_json(url)
+        self.url = self._get_request_url(method, params)
+        result = self._load_url_and_parse_json(self.url)
         if not result["success"]:
             print("Error from api call", method)
             print("  result.errorCode:", result["errorCode"])
@@ -173,6 +174,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-l", "--list", action="store_true", help="List all packets on first mission"
     )
+    parser.add_argument("--show", action="store_true", help="Show full URL of API call")
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
@@ -207,7 +209,13 @@ if __name__ == "__main__":
             "getMissionDetails", {"missionID": mission_id_to_fetch}
         )
         result_as_formatted_string = json.dumps(mission_details, indent=2)
+
+        # Prepend output with full url of API call, if --show flag is also passed
+        if args.show:
+            print(bark.url)
+
         print(result_as_formatted_string)
+
     if args.list:
         missions = bark.console_api("getMissions")
         mission_id_to_fetch = bark.mission_id
@@ -217,6 +225,11 @@ if __name__ == "__main__":
         recent_packets = bark.console_api(
             "getConsoleMissionPackets", {"missionID": mission_id_to_fetch}
         )
+
+        # Prepend output with full url of API call, if --show flag is also passed
+        if args.show:
+            print(bark.url)
+
         print("Most Recent Packets, Any Radio/Format")
         number_of_packets = len(recent_packets["lastAnyRadioOrFormat"])
         for i in range(number_of_packets):
