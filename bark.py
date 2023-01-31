@@ -199,35 +199,37 @@ if __name__ == "__main__":
     if args.get_mission_id:
         print(bark.mission_id)
 
-    # Handle consoleAPI commands
+    # Handle console_api commands
     if args.info:
         missions = bark.console_api("getMissions")
-        missionIDToFetch = bark.mission_id
-        missionDetails = bark.console_api(
-            "getMissionDetails", {"missionID": missionIDToFetch}
+        mission_id_to_fetch = bark.mission_id
+        mission_details = bark.console_api(
+            "getMissionDetails", {"missionID": mission_id_to_fetch}
         )
-        result_as_formatted_string = json.dumps(missionDetails, indent=2)
+        result_as_formatted_string = json.dumps(mission_details, indent=2)
         print(result_as_formatted_string)
     if args.list:
         missions = bark.console_api("getMissions")
-        missionIDToFetch = bark.mission_id
-        missionDetails = bark.console_api(
-            "getMissionDetails", {"missionID": missionIDToFetch}
+        mission_id_to_fetch = bark.mission_id
+        mission_details = bark.console_api(
+            "getMissionDetails", {"missionID": mission_id_to_fetch}
         )
-        recentPackets = bark.console_api(
-            "getConsoleMissionPackets", {"missionID": missionIDToFetch}
+        recent_packets = bark.console_api(
+            "getConsoleMissionPackets", {"missionID": mission_id_to_fetch}
         )
         print("Most Recent Packets, Any Radio/Format")
-        numPackets = len(recentPackets["lastAnyRadioOrFormat"])
-        for i in range(numPackets):
-            packet = recentPackets["lastAnyRadioOrFormat"][-numPackets]
-            radioViewID = packet["radioViewID"]
-            radioViewName = missionDetails["radioViews"][str(radioViewID)][
+        number_of_packets = len(recent_packets["lastAnyRadioOrFormat"])
+        for i in range(number_of_packets):
+            packet = recent_packets["lastAnyRadioOrFormat"][-number_of_packets]
+            radio_view_id = packet["radioViewID"]
+            radio_view_name = mission_details["radioViews"][str(radio_view_id)][
                 "radioViewName"
             ]
-            formatID = packet["formatID"]
-            formatName = missionDetails["downlinkFormats"][str(formatID)]["formatName"]
-            print("  ", radioViewName, formatName)
+            format_id = packet["formatID"]
+            format_name = mission_details["downlinkFormats"][str(format_id)][
+                "formatName"
+            ]
+            print("  ", radio_view_name, format_name)
             print("     ", packet["gatewayTS"], "UTC")
             print("     ", packet["numBytes"], "bytes")
             print("     ", packet["packetFields"])
