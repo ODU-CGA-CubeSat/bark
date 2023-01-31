@@ -51,10 +51,10 @@ Print help text
 ./bark.py
 ```
 
-Set user email & API key
+Set user email, API key, & mission id
 
 ```bash
-./bark.py --set-email your_email@example.com --set-api-key 1234
+./bark.py --set-email your_email@example.com --set-api-key 173467321476c32789777643t732v73117888732476789764376 --set-mission-id 1701
 ```
 
 Display info on first mission
