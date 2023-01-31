@@ -168,11 +168,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--get-mission-id", action="store_true", help="Get NearSpace Launch Mission ID"
     )
+    parser.add_argument("--info", action="store_true", help="Display info on mission")
     parser.add_argument(
-        "--info", action="store_true", help="Display info on first mission"
-    )
-    parser.add_argument(
-        "-l", "--list", action="store_true", help="List all packets on first mission"
+        "-l", "--list", action="store_true", help="List all packets on mission"
     )
     parser.add_argument("--show", action="store_true", help="Show full URL of API call")
 

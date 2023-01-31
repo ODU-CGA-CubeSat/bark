@@ -57,13 +57,13 @@ Set user email, API key, & mission id
 ./bark.py --set-email your_email@example.com --set-api-key 173467321476c32789777643t732v73117888732476789764376 --set-mission-id 1701
 ```
 
-Display info on first mission
+Display info on mission
 
 ```bash
 ./bark.py --info
 ```
 
-List all packets on first mission
+List all packets on mission
 
 ```bash
 ./bark.py -l
