@@ -21,12 +21,12 @@ class Bark:
 
     def _prompt_set_email_and_api_key(self):
         sys.exit(
-            "\nPlease configure your email and API key using the following commands:\n\n\t./bark.py --set-email <your_email@example.com>\n\t./bark.py --set-api-key <your_api_key>\n"
+            "\nPlease configure your email and API key using the following commands:\n\n\t./bark.py config --email <your_email@example.com>\n\t./bark.py config --api-key <your_api_key>\n"
         )
 
     def _prompt_set_mission_id(self):
         sys.exit(
-            "\nPlease configure your mission ID using the following commands:\n\n\t./bark.py --set-mission-id <your_mission_id>\n"
+            "\nPlease configure your mission ID using the following commands:\n\n\t./bark.py comfig --mission-id <your_mission_id>\n"
         )
 
     def _load_config(self):
@@ -146,29 +146,35 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="CLI client for communicating with satellites on the Iridium Satellite Network using the NearSpace Launch API"
     )
-    parser.add_argument(
-        "--set-email", type=str, nargs=1, help="Set NearSpace Launch user email"
+
+    # Setup subparser for subcommands
+    subparsers = parser.add_subparsers(dest="command")
+
+    # Create parser with args for configuring email, API key, and/or mission id
+    parser_config = subparsers.add_parser(
+        "config", help="Configure email, API key, and/or mission ID"
     )
-    parser.add_argument(
-        "--get-email", action="store_true", help="Get NearSpace Launch user email"
+    parser_config.add_argument("--email", type=str, required=True, help="Set email")
+    parser_config.add_argument("--api-key", type=str, required=True, help="Set API key")
+    parser_config.add_argument("--mission-id", type=str, help="Set Mission ID")
+
+    # Create parser with args for requesting mission info
+    parser_info = subparsers.add_parser("info", help="Request mission info")
+    parser_info.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbosity (prints full API call)",
     )
-    parser.add_argument(
-        "--set-api-key", type=str, nargs=1, help="Set NearSpace Launch API key"
+
+    # Create parser with args for requesting packets info
+    parser_packets = subparsers.add_parser("ls", help="Request list of packets")
+    parser_packets.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbosity (prints full API call)",
     )
-    parser.add_argument(
-        "--get-api-key", action="store_true", help="Get NearSpace Launch API key"
-    )
-    parser.add_argument(
-        "--set-mission-id", type=str, nargs=1, help="Set NearSpace Launch Mission ID"
-    )
-    parser.add_argument(
-        "--get-mission-id", action="store_true", help="Get NearSpace Launch Mission ID"
-    )
-    parser.add_argument("--info", action="store_true", help="Display info on mission")
-    parser.add_argument(
-        "-l", "--list", action="store_true", help="List all packets on mission"
-    )
-    parser.add_argument("--show", action="store_true", help="Show full URL of API call")
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
@@ -181,35 +187,31 @@ if __name__ == "__main__":
     # Setup bark instance
     bark = Bark()
 
-    # Get/set config.toml, if passed as argument
-    if args.set_email:
-        bark.email = args.set_email[0]
-    if args.get_email:
-        print(bark.email)
-    if args.set_api_key:
-        bark.api_key = args.set_api_key[0]
-    if args.get_api_key:
-        print(bark.api_key)
-    if args.set_mission_id:
-        bark.mission_id = args.set_mission_id[0]
-    if args.get_mission_id:
-        print(bark.mission_id)
+    # Configure/update config.toml, if passed as arguments
+    if args.command == "config":
+        if args.email:
+            bark.email = args.email
+        if args.api_key:
+            bark.api_key = args.api_key
+        if args.mission_id:
+            bark.mission_id = args.mission_id
 
-    # Handle console_api commands
-    if args.info:
+    # Request mission info
+    if args.command == "info":
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
         )
         result_as_formatted_string = json.dumps(mission_details, indent=2)
 
-        # Prepend output with full url of API call, if --show flag is also passed
-        if args.show:
+        # Prepend output with full url of API call, if --verbose flag is also passed
+        if args.verbose:
             print(bark.url)
 
         print(result_as_formatted_string)
 
-    if args.list:
+    # Request list of packets
+    if args.command == "ls":
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
@@ -218,8 +220,8 @@ if __name__ == "__main__":
             "getConsoleMissionPackets", {"missionID": mission_id_to_fetch}
         )
 
-        # Prepend output with full url of API call, if --show flag is also passed
-        if args.show:
+        # Prepend output with full url of API call, if --verbose flag is also passed
+        if args.verbose:
             print(bark.url)
 
         print("Most Recent Packets, Any Radio/Format")
