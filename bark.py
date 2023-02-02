@@ -154,8 +154,8 @@ if __name__ == "__main__":
     parser_config = subparsers.add_parser(
         "config", help="Configure email, API key, and/or mission ID"
     )
-    parser_config.add_argument("--email", type=str, required=True, help="Set email")
-    parser_config.add_argument("--api-key", type=str, required=True, help="Set API key")
+    parser_config.add_argument("--email", type=str, help="Set email")
+    parser_config.add_argument("--api-key", type=str, help="Set API key")
     parser_config.add_argument("--mission-id", type=str, help="Set Mission ID")
 
     # Create parser with args for requesting mission info
