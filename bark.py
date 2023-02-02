@@ -176,6 +176,22 @@ if __name__ == "__main__":
         help="Enable verbosity (prints full API call)",
     )
 
+    # Create parser with args for sending uplink command
+    parser_uplink = subparsers.add_parser("uplink", help="Send an uplink command")
+    parser_uplink.add_argument("--radio-view-id", type=str, help="Set radio view ID")
+    parser_uplink.add_argument("--format-id", type=str, help="Set format ID")
+    parser_uplink.add_argument("--fields", type=str, help="Set fields")
+    parser_uplink.add_argument(
+        "--note",
+        type=str,
+        help="Add an optional note as string",
+    )
+    parser_uplink.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Enable dry run",
+    )
+
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
