@@ -15,6 +15,7 @@ class Bark:
         self.config = {}
         self.config["user"] = {}
         self.config["mission"] = {}
+        self.config["uplink_params"] = {}
 
         self.base_url = "https://data.nsldata.com/webAPI.php"
         self.url = ""
@@ -109,6 +110,72 @@ class Bark:
         with open("config.toml", "w") as file:
             file.write(toml.dumps(self.config))
 
+    @property
+    def radio_view_id(self):
+        # Load config
+        self._load_config()
+
+        # Attempt to return email. Otherwise, prompt user to configure email
+        try:
+            return self.config["uplink_params"]["radio_view_id"]
+        except Exception:
+            traceback.print_exc()
+
+    @radio_view_id.setter
+    def radio_view_id(self, radio_view_id):
+        # Load config, as to ensure other configurations persist after overwriting config file
+        self._load_config()
+
+        self.config["uplink_params"]["radio_view_id"] = radio_view_id
+
+        # Overwrite existing config file
+        with open("config.toml", "w") as file:
+            file.write(toml.dumps(self.config))
+
+    @property
+    def format_id(self):
+        # Load config
+        self._load_config()
+
+        # Attempt to return email. Otherwise, prompt user to configure email
+        try:
+            return self.config["uplink_params"]["format_id"]
+        except Exception:
+            traceback.print_exc()
+
+    @format_id.setter
+    def format_id(self, format_id):
+        # Load config, as to ensure other configurations persist after overwriting config file
+        self._load_config()
+
+        self.config["uplink_params"]["format_id"] = format_id
+
+        # Overwrite existing config file
+        with open("config.toml", "w") as file:
+            file.write(toml.dumps(self.config))
+
+    @property
+    def fields(self):
+        # Load config
+        self._load_config()
+
+        # Attempt to return email. Otherwise, prompt user to configure email
+        try:
+            return self.config["uplink_params"]["fields"]
+        except Exception:
+            traceback.print_exc()
+
+    @fields.setter
+    def fields(self, fields):
+        # Load config, as to ensure other configurations persist after overwriting config file
+        self._load_config()
+
+        self.config["uplink_params"]["fields"] = fields
+
+        # Overwrite existing config file
+        with open("config.toml", "w") as file:
+            file.write(toml.dumps(self.config))
+
     def _get_request_url(self, method, params={}):
         return "".join(
             [
@@ -157,6 +224,9 @@ if __name__ == "__main__":
     parser_config.add_argument("--email", type=str, help="Set email")
     parser_config.add_argument("--api-key", type=str, help="Set API key")
     parser_config.add_argument("--mission-id", type=str, help="Set Mission ID")
+    parser_config.add_argument("--radio-view-id", type=str, help="Set radio view ID")
+    parser_config.add_argument("--format-id", type=str, help="Set format ID")
+    parser_config.add_argument("--fields", type=str, help="Set fields")
 
     # Create parser with args for requesting mission info
     parser_info = subparsers.add_parser("info", help="Request mission info")
@@ -211,6 +281,12 @@ if __name__ == "__main__":
             bark.api_key = args.api_key
         if args.mission_id:
             bark.mission_id = args.mission_id
+        if args.radio_view_id:
+            bark.radio_view_id = args.radio_view_id
+        if args.format_id:
+            bark.format_id = args.format_id
+        if args.fields:
+            bark.fields = args.fields
 
     # Request mission info
     if args.command == "info":
