@@ -19,6 +19,7 @@ class Bark:
 
         self.base_url = "https://data.nsldata.com/webAPI.php"
         self.url = ""
+        self.verbose = False
 
     def _prompt_set_email_and_api_key(self):
         sys.exit(
@@ -197,6 +198,8 @@ class Bark:
 
     def console_api(self, method, params={}):
         self.url = self._get_request_url(method, params)
+        if self.verbose == True:
+            print(self.url)
         result = self._load_url_and_parse_json(self.url)
         if not result["success"]:
             print("Error from api call", method)
@@ -299,20 +302,24 @@ if __name__ == "__main__":
 
     # Request mission info
     if args.command == "info":
+        # Prepend output with full url of API call, if --verbose flag is also passed
+        if args.verbose:
+            bark.verbose = True
+
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
         )
         result_as_formatted_string = json.dumps(mission_details, indent=2)
 
-        # Prepend output with full url of API call, if --verbose flag is also passed
-        if args.verbose:
-            print(bark.url)
-
         print(result_as_formatted_string)
 
     # Request list of packets
     if args.command == "ls":
+        # Prepend output with full url of API call, if --verbose flag is also passed
+        if args.verbose:
+            bark.verbose = True
+
         mission_id_to_fetch = bark.mission_id
         mission_details = bark.console_api(
             "getMissionDetails", {"missionID": mission_id_to_fetch}
@@ -320,10 +327,6 @@ if __name__ == "__main__":
         recent_packets = bark.console_api(
             "getConsoleMissionPackets", {"missionID": mission_id_to_fetch}
         )
-
-        # Prepend output with full url of API call, if --verbose flag is also passed
-        if args.verbose:
-            print(bark.url)
 
         print("Most Recent Packets, Any Radio/Format")
         most_recent_packets_any_radio_or_format = recent_packets["lastAnyRadioOrFormat"]
