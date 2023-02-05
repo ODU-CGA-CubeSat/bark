@@ -275,6 +275,9 @@ if __name__ == "__main__":
 
     # Configure/update config.toml, if passed as arguments
     if args.command == "config":
+        if len(sys.argv) == 2:
+            parser_config.print_help(sys.stderr)
+            sys.exit(1)
         if args.email:
             bark.email = args.email
         if args.api_key:
