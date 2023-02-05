@@ -261,6 +261,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Enable dry run",
     )
+    parser_uplink.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbosity (prints full API call)",
+    )
 
     # Print help text if no arguments passed
     if len(sys.argv) == 1:
