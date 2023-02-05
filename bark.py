@@ -21,6 +21,10 @@ class Bark:
         self.url = ""
         self.verbose = False
 
+        # set default parameters for uplink
+        self.dry_run = False
+        self.note = ""
+
     def _prompt_set_email_and_api_key(self):
         sys.exit(
             "\nPlease configure your email and API key using the following commands:\n\n\t./bark.py config --email <your_email@example.com>\n\t./bark.py config --api-key <your_api_key>\n"
@@ -298,7 +302,7 @@ if __name__ == "__main__":
         if args.format_id:
             bark.format_id = args.format_id
         if args.fields:
-            bark.fields = args.fields
+            bark.fields = json.loads(args.fields)
 
     # Request mission info
     if args.command == "info":
@@ -343,3 +347,36 @@ if __name__ == "__main__":
             print("     ", packet["gatewayTS"], "UTC")
             print("     ", packet["numBytes"], "bytes")
             print("     ", packet["packetFields"])
+
+    # Send an uplink command
+    if args.command == "uplink":
+        # Prepend output with full url of API call, if --verbose flag is also passed
+        if args.verbose:
+            bark.verbose = True
+
+        # Override params for radioViewID, formatID, fields, dryRun, and notes in config.toml if passed as flag arguments
+        if args.radio_view_id:
+            bark.radio_view_id = args.radio_view_id
+        if args.format_id:
+            bark.format_id = args.format_id
+        if args.fields:
+            bark.fields = args.fields
+        if args.dry_run:
+            bark.dry_run = args.dry_run
+        if args.note:
+            bark.note = args.note
+
+        # Send uplink command
+        response = bark.console_api(
+            "sendUplinkToRadioView",
+            {
+                "radioViewID": bark.radio_view_id,
+                "formatID": bark.format_id,
+                "dryRun": bark.dry_run,
+                "note": bark.note,
+                "fields": bark.fields,
+            },
+        )
+        result_as_formatted_string = json.dumps(response, indent=2)
+
+        print(result_as_formatted_string)
